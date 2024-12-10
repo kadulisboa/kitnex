@@ -1,0 +1,142 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String        @id @default(cuid())
+  clerkId    String        @unique
+  name       String
+  email      String        @unique
+  phone      String?
+  planId     String
+  plan       Plan          @relation(fields: [planId], references: [id])
+  properties Property[]
+  rentals    Rental[]
+  settings   UserSettings?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model UserSettings {
+  id               String      @id @default(cuid())
+  userId           String      @unique
+  user             User        @relation(fields: [userId], references: [id])
+  notifyByEmail    Boolean     @default(true)
+  notifyByWhatsapp Boolean     @default(true)
+  pixKeyType       PixKeyType?
+  pixKeyValue      String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+enum PixKeyType {
+  CPF
+  CNPJ
+  EMAIL
+  PHONE
+  RANDOM
+}
+
+model Plan {
+  id        String        @id @default(cuid())
+  name      String // 'Basic' | 'Pro'
+  features  PlanFeature[]
+  price     Decimal
+  active    Boolean       @default(true)
+  users     User[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model PlanFeature {
+  id        String   @id @default(cuid())
+  planId    String
+  plan      Plan     @relation(fields: [planId], references: [id])
+  feature   String // 'PROPERTY_LIMIT', 'CONTRACT_LIMIT', etc
+  value     Int // The limit value
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Property {
+  id         String       @id @default(cuid())
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
+  type       PropertyType
+  identifier String
+  address    String
+  number     String?
+  complement String?
+  district   String
+  city       String
+  state      String
+  zipCode    String
+  rentals    Rental[]
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+enum PropertyType {
+  KITNET
+  HOUSE
+  APARTMENT
+  COMMERCIAL
+  OTHER
+}
+
+model Renter {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  document  String // CPF/CNPJ
+  rentals   Rental[]
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Rental {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  propertyId String
+  property   Property  @relation(fields: [propertyId], references: [id])
+  renterId   String
+  renter     Renter    @relation(fields: [renterId], references: [id])
+  price      Decimal
+  dueDay     Int // Day of the month for payment
+  charges    Charge[]
+  startDate  DateTime
+  endDate    DateTime?
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Charge {
+  id        String       @id @default(cuid())
+  rentalId  String
+  rental    Rental       @relation(fields: [rentalId], references: [id])
+  dueDate   DateTime
+  price     Decimal
+  status    ChargeStatus
+  paidAt    DateTime?
+  proofUrl  String? // URL do comprovante
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+enum ChargeStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}

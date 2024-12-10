@@ -1,5 +1,9 @@
+import { ToastHandler } from "@/lib/toastHandler";
+import { ptBR } from "@clerk/localizations";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -24,12 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider localization={ptBR}>
+      <html lang="pt-BR">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased pt-10 lg:pt-0 bg-gray-50`}
+        >
+          {children}
+          <Toaster richColors position="top-right" />
+          <ToastHandler />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

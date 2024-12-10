@@ -14,5 +14,16 @@ export default {
       },
     },
   },
+  extend: {
+    keyframes: {
+      fadeIn: {
+        "0%": { opacity: "0", transform: "translate(-50%, 10px)" },
+        "100%": { opacity: "1", transform: "translate(-50%, 0)" },
+      },
+    },
+    animation: {
+      fadeIn: "fadeIn 0.2s ease-out",
+    },
+  },
   plugins: [],
 } satisfies Config;
