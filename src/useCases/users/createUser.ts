@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { CreateUserDTO, UserResponse } from "@/types/api";
+import { CreateUserDTO } from "@/types/dtos";
+import { UserResponse } from "@/types/responses";
 
 export async function createUser(params: CreateUserDTO): Promise<UserResponse> {
   try {

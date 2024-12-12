@@ -1,10 +1,10 @@
+// src/components/InfoModal.tsx
 "use client";
 
 import { Globe, Instagram, Mail } from "lucide-react";
 import Link from "next/link";
 import { Whatsapp } from "../icons/whatsapp";
 
-// src/components/InfoModal.tsx
 interface InfoModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -20,10 +20,18 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
         <div
           className="fixed inset-0 bg-black/50 transition-opacity"
           onClick={onClose}
+          style={{
+            animation: "fadeIn 0.2s ease-out",
+          }}
         />
 
         {/* Modal */}
-        <div className="bg-white rounded-lg w-full max-w-md p-6 relative z-10">
+        <div
+          className="bg-white rounded-lg w-full max-w-md p-6 relative z-10"
+          style={{
+            animation: "scaleUp 0.2s ease-out",
+          }}
+        >
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Suporte</h3>
@@ -77,6 +85,28 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
             </div>
           </div>
         </div>
+
+        <style jsx>{`
+          @keyframes scaleUp {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+        `}</style>
       </div>
     </div>
   );

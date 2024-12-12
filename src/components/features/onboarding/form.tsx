@@ -58,10 +58,10 @@ export function OnboardingForm({
   };
 
   useEffect(() => {
-    console.log(state);
     if (state.errors?.global) {
       router.push("/sign-in");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (

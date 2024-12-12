@@ -1,4 +1,3 @@
-// src/app/(auth)/onboarding/page.tsx
 import { onboardingAction } from "@/app/actions/onboarding";
 import { OnboardingForm } from "@/components/features/onboarding/form";
 import { checkNeedsOnboarding } from "@/useCases/users/checkNeedsOnboarding";

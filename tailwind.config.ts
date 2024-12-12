@@ -20,9 +20,14 @@ export default {
         "0%": { opacity: "0", transform: "translate(-50%, 10px)" },
         "100%": { opacity: "1", transform: "translate(-50%, 0)" },
       },
+      "scale-up": {
+        "0%": { transform: "scale(0.95) translate(-50%, -50%)", opacity: "0" },
+        "100%": { transform: "scale(1) translate(-50%, -50%)", opacity: "1" },
+      },
     },
     animation: {
       fadeIn: "fadeIn 0.2s ease-out",
+      "scale-up": "scale-up 0.2s ease-out",
     },
   },
   plugins: [],

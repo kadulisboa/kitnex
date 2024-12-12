@@ -4,6 +4,7 @@ import { InfoModal } from "@/components/ui/navbar/infoModal";
 import { useClerk } from "@clerk/nextjs";
 import {
   Building2,
+  FileText,
   HelpCircle,
   Home,
   LogOut,
@@ -22,6 +23,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 const menuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Imóveis", href: "/properties", icon: Building2 },
+  { label: "Alugueis", href: "/rentals", icon: FileText },
   { label: "Configurações", href: "/settings", icon: Settings },
 ];
 

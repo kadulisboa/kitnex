@@ -1,4 +1,3 @@
-// src/app/actions/onboarding.ts
 "use server";
 
 import { PixKeyType } from "@/types/enums";

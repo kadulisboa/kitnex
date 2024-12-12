@@ -1,5 +1,5 @@
 import { ChargeStatus, PixKeyType, PropertyType } from "./enums";
-// Interfaces
+
 export interface User {
   id: string;
   clerkId: string;
@@ -7,10 +7,10 @@ export interface User {
   email: string;
   phone: string | null;
   planId: string;
-  plan: Plan;
-  properties: Property[];
-  rentals: Rental[];
-  settings: UserSettings | null;
+  plan?: Plan;
+  properties?: Property[];
+  rentals?: Rental[];
+  settings?: UserSettings | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,7 +18,6 @@ export interface User {
 export interface UserSettings {
   id: string;
   userId: string;
-  user: User;
   notifyByEmail: boolean;
   notifyByWhatsapp: boolean;
   pixKeyType: PixKeyType | null;
@@ -33,7 +32,6 @@ export interface Plan {
   features: PlanFeature[];
   price: number;
   active: boolean;
-  users: User[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,7 +39,6 @@ export interface Plan {
 export interface PlanFeature {
   id: string;
   planId: string;
-  plan: Plan;
   feature: string;
   value: number;
   createdAt: Date;
@@ -51,7 +48,8 @@ export interface PlanFeature {
 export interface Property {
   id: string;
   userId: string;
-  user: User;
+  code: string;
+  title: string;
   type: PropertyType;
   identifier: string;
   address: string;
@@ -61,7 +59,6 @@ export interface Property {
   city: string;
   state: string;
   zipCode: string;
-  rentals: Rental[];
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -73,7 +70,6 @@ export interface Renter {
   email: string | null;
   phone: string | null;
   document: string;
-  rentals: Rental[];
   active: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -82,14 +78,13 @@ export interface Renter {
 export interface Rental {
   id: string;
   userId: string;
-  user: User;
+  code: string;
   propertyId: string;
-  property: Property;
+  property?: Property;
   renterId: string;
-  renter: Renter;
+  renter?: Renter;
   price: number;
   dueDay: number;
-  charges: Charge[];
   startDate: Date;
   endDate: Date | null;
   active: boolean;
@@ -99,8 +94,11 @@ export interface Rental {
 
 export interface Charge {
   id: string;
+  userId: string;
+  code: string;
+  title: string;
   rentalId: string;
-  rental: Rental;
+  rental?: Rental;
   dueDate: Date;
   price: number;
   status: ChargeStatus;

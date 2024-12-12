@@ -19,6 +19,7 @@ model User {
   properties Property[]
   rentals    Rental[]
   settings   UserSettings?
+  sequence   UserSequence?
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 }
@@ -41,6 +42,17 @@ enum PixKeyType {
   EMAIL
   PHONE
   RANDOM
+}
+
+model UserSequence {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  propertySeq Int      @default(0) // Para gerar KX001
+  rentalSeq   Int      @default(0) // Para gerar AX001
+  chargeSeq   Int      @default(0) // Para gerar CX001
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Plan {
@@ -68,6 +80,8 @@ model Property {
   id         String       @id @default(cuid())
   userId     String
   user       User         @relation(fields: [userId], references: [id])
+  code       String // KX001, KX002, etc
+  title      String // Nome amigável do imóvel
   type       PropertyType
   identifier String
   address    String
@@ -81,6 +95,8 @@ model Property {
   active     Boolean      @default(true)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
+
+  @@unique([userId, code]) // Garante código único por usuário
 }
 
 enum PropertyType {
@@ -107,31 +123,39 @@ model Rental {
   id         String    @id @default(cuid())
   userId     String
   user       User      @relation(fields: [userId], references: [id])
+  code       String // AX001, AX002, etc
   propertyId String
   property   Property  @relation(fields: [propertyId], references: [id])
   renterId   String
   renter     Renter    @relation(fields: [renterId], references: [id])
   price      Decimal
-  dueDay     Int // Day of the month for payment
+  dueDay     Int
   charges    Charge[]
   startDate  DateTime
   endDate    DateTime?
   active     Boolean   @default(true)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, code])
 }
 
 model Charge {
   id        String       @id @default(cuid())
+  userId    String // Adicionado para referência direta
+  code      String // CX001, CX002, etc
+  title     String // Ex: "Aluguel Janeiro/2024"
   rentalId  String
   rental    Rental       @relation(fields: [rentalId], references: [id])
   dueDate   DateTime
   price     Decimal
   status    ChargeStatus
   paidAt    DateTime?
-  proofUrl  String? // URL do comprovante
+  proofUrl  String?
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+
+  @@unique([userId, code])
 }
 
 enum ChargeStatus {

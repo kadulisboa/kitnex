@@ -8,10 +8,10 @@ export enum PixKeyType {
 
 export enum PropertyType {
   KITNET = "KITNET",
-  HOUSE = "HOUSE",
-  APARTMENT = "APARTMENT",
-  COMMERCIAL = "COMMERCIAL",
-  OTHER = "OTHER",
+  // HOUSE = "HOUSE",
+  // APARTMENT = "APARTMENT",
+  // COMMERCIAL = "COMMERCIAL",
+  // OTHER = "OTHER",
 }
 
 export enum ChargeStatus {

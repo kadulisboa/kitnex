@@ -59,7 +59,9 @@ export function SettingsForm({ userId, initialSettings }: SettingsFormProps) {
     <form onSubmit={handleSubmit} className="p-6 space-y-8">
       {/* Notificações */}
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Notificações</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">
+          Notificações para inquilinos
+        </h3>
         <div className="space-y-4">
           <label className="flex items-start gap-3">
             <input
@@ -78,7 +80,8 @@ export function SettingsForm({ userId, initialSettings }: SettingsFormProps) {
                 E-mail
               </span>
               <span className="text-sm text-gray-500">
-                Receba notificações por e-mail sobre pagamentos e atualizações
+                Envie notificações por e-mail de solicitação de pagamentos e
+                atualizações para seus inquilinos
               </span>
             </div>
           </label>
@@ -100,7 +103,8 @@ export function SettingsForm({ userId, initialSettings }: SettingsFormProps) {
                 WhatsApp
               </span>
               <span className="text-sm text-gray-500">
-                Receba notificações por WhatsApp sobre pagamentos e atualizações
+                Envie notificações por Whatsapp de solicitação de pagamentos e
+                atualizações para seus inquilinos
               </span>
             </div>
           </label>
