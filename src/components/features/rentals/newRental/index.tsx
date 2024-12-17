@@ -95,7 +95,7 @@ export function NewRentalModal({ onClose }: NewRentalModalProps) {
               {step === "confirmation" && (
                 <ConfirmationStep
                   onBack={() => setStep("contract")}
-                  onConfirm={() => onClose()}
+                  onComplete={() => onClose()}
                 />
               )}
             </div>

@@ -1,20 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { RenterFormData } from "@/types/forms";
+import {
+  ContractFormData,
+  PropertyFormData,
+  RenterFormData,
+} from "@/types/forms";
 import { createContext, useContext, useState } from "react";
 
 interface RentalFormData {
   renter?: RenterFormData;
-  property?: any; // Será tipado posteriormente
-  contract?: any; // Será tipado posteriormente
+  property?: PropertyFormData;
+  contract?: ContractFormData;
 }
 
 interface RentalFormContextType {
   formData: RentalFormData;
   setRenterData: (data: RenterFormData) => void;
-  setPropertyData: (data: any) => void;
-  setContractData: (data: any) => void;
+  setPropertyData: (data: PropertyFormData) => void;
+  setContractData: (data: ContractFormData) => void;
   clearForm: () => void;
 }
 

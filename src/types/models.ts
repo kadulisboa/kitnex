@@ -68,7 +68,7 @@ export interface Renter {
   id: string;
   name: string;
   email: string | null;
-  phone: string | null;
+  phone: string;
   document: string;
   active: boolean;
   createdAt: Date;

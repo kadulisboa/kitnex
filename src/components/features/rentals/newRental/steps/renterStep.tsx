@@ -2,8 +2,8 @@
 
 import { searchRentersAction } from "@/app/actions/renters";
 import { useRentalForm } from "@/contexts/rentalFormContext";
-import { MockRenter } from "@/mocks/renters";
-import { RenterFormData as SelectedRenter } from "@/types";
+import { RenterFormData as SelectedRenter } from "@/types/forms";
+import { Renter as MockRenter } from "@/types/models";
 import { Search, UserPlus, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PatternFormat } from "react-number-format";
@@ -16,7 +16,7 @@ interface RenterStepProps {
 export function RenterStep({ onNext }: RenterStepProps) {
   const { formData, setRenterData } = useRentalForm();
   const [selectedOption, setSelectedOption] = useState<"existing" | "new">(
-    formData.renter?.id ? "existing" : "new"
+    !formData.renter?.isNew ? "existing" : "new"
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<MockRenter[]>([]);
@@ -297,7 +297,7 @@ export function RenterStep({ onNext }: RenterStepProps) {
             </label>
             <input
               type="email"
-              value={newRenter.email}
+              value={newRenter.email ?? undefined}
               onChange={(e) =>
                 setNewRenter((prev) => ({ ...prev, email: e.target.value }))
               }

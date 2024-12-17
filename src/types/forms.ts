@@ -5,7 +5,7 @@ export interface RenterFormData {
   id?: string;
   name: string;
   document: string;
-  email?: string;
+  email: string | null;
   phone: string;
   isNew?: boolean;
 }
@@ -15,7 +15,7 @@ export interface PropertyFormData {
   type: PropertyType;
   identifier: string;
   address: string;
-  number?: string;
+  number: string | null;
   complement?: string;
   district: string;
   city: string;
@@ -28,7 +28,7 @@ export interface ContractFormData {
   price: number;
   dueDay: number;
   startDate: Date;
-  endDate?: Date;
+  endDate: Date;
 }
 
 export interface RentalFormData {

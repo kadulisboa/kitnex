@@ -11,3 +11,12 @@ type RentalWithSummary = Omit<Rental, "renter" | "property"> & {
 };
 
 export type { RentalWithSummary };
+
+export interface StepProps {
+  onNext: () => void;
+  onBack: () => void;
+}
+export type RenterStepProps = StepProps;
+export type PropertyStepProps = StepProps;
+export type ContractStepProps = StepProps;
+export type ConfirmationStepProps = StepProps;

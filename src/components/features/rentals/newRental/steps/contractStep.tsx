@@ -1,24 +1,104 @@
 "use client";
 
+import { useRentalForm } from "@/contexts/rentalFormContext";
+import { formatCurrencyToDecimal } from "@/lib/formatCurrency";
+import { ContractStepProps } from "@/types/props";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { NumericFormat } from "react-number-format";
-
-interface ContractStepProps {
-  onNext: () => void;
-  onBack: () => void;
-}
+import { toast } from "sonner";
 
 export function ContractStep({ onNext, onBack }: ContractStepProps) {
+  const { formData, setContractData } = useRentalForm();
+
+  // Initialize with context data if exists
   const [contract, setContract] = useState({
-    price: "",
-    dueDay: "",
-    startDate: "",
-    endDate: "",
+    price: formData.contract?.price?.toString() || "",
+    dueDay: formData.contract?.dueDay?.toString() || "",
+    startDate: formData.contract?.startDate
+      ? new Date(formData.contract.startDate).toISOString().split("T")[0]
+      : "",
+    endDate: formData.contract?.endDate
+      ? new Date(formData.contract.endDate).toISOString().split("T")[0]
+      : "",
   });
 
-  const handleChange = (field: string, value: string) => {
-    setContract((prev) => ({ ...prev, [field]: value }));
+  const handleNext = () => {
+    // Validate required fields
+    if (
+      !contract.price ||
+      !contract.dueDay ||
+      !contract.startDate ||
+      !contract.endDate
+    ) {
+      toast.error("Preencha todos os campos obrigatórios");
+      return;
+    }
+
+    // Validate dueDay is between 1 and 31
+    const dueDay = parseInt(contract.dueDay);
+    if (dueDay < 1 || dueDay > 31) {
+      toast.error("O dia do vencimento deve ser entre 1 e 31");
+      return;
+    }
+
+    // Validate dates
+    const startDate = new Date(contract.startDate);
+    const endDate = new Date(contract.endDate);
+
+    if (endDate && startDate >= endDate) {
+      toast.error("A data de término deve ser posterior à data de início");
+      return;
+    }
+
+    // Clean price string and convert to number
+    const price = formatCurrencyToDecimal(contract.price);
+
+    if (price <= 0) {
+      toast.error("O valor do aluguel deve ser maior que zero");
+      return;
+    }
+
+    // Save to context
+    setContractData({
+      price,
+      dueDay,
+      startDate,
+      endDate,
+    });
+
+    onNext();
+  };
+
+  const handleBack = () => {
+    // Save current data before going back
+    const price = formatCurrencyToDecimal(contract.price);
+    const dueDay = parseInt(contract.dueDay);
+    const startDate = new Date(contract.startDate);
+    const endDate = new Date(contract.endDate);
+
+    setContractData({
+      price,
+      dueDay,
+      startDate,
+      endDate,
+    });
+
+    onBack();
+  };
+
+  const handleEndDateInput = (value: string) => {
+    if (!value) {
+      return "";
+    }
+
+    const endDate = new Date(
+      new Date(value).setMonth(new Date(value).getMonth() + 1)
+    )
+      .toISOString()
+      .split("T")[0];
+
+    return endDate;
   };
 
   return (
@@ -34,10 +114,14 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
           </label>
           <NumericFormat
             value={contract.price}
-            onChange={(e) => handleChange("price", e.target.value)}
+            onChange={(e) =>
+              setContract((prev) => ({ ...prev, price: e.target.value }))
+            }
             prefix="R$ "
             thousandSeparator="."
             decimalSeparator=","
+            decimalScale={2}
+            fixedDecimalScale
             className="text-gray-900 mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
@@ -53,7 +137,9 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
           </label>
           <select
             value={contract.dueDay}
-            onChange={(e) => handleChange("dueDay", e.target.value)}
+            onChange={(e) =>
+              setContract((prev) => ({ ...prev, dueDay: e.target.value }))
+            }
             className="text-gray-900 mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           >
@@ -82,7 +168,9 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
           <input
             type="date"
             value={contract.startDate}
-            onChange={(e) => handleChange("startDate", e.target.value)}
+            onChange={(e) =>
+              setContract((prev) => ({ ...prev, startDate: e.target.value }))
+            }
             className="text-gray-900 pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             required
           />
@@ -104,9 +192,12 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
           <input
             type="date"
             value={contract.endDate}
-            onChange={(e) => handleChange("endDate", e.target.value)}
-            className="text-gray-900 pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            min={handleEndDateInput(contract.startDate ?? "")} // Start date plus one month
             required
+            onChange={(e) =>
+              setContract((prev) => ({ ...prev, endDate: e.target.value }))
+            }
+            className="text-gray-900 pl-10 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       </div>
@@ -129,13 +220,13 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
       {/* Botões de navegação */}
       <div className="flex justify-between gap-4">
         <button
-          onClick={onBack}
+          onClick={handleBack}
           className="px-4 py-2 bg-gray-500 text-gray-100 rounded-lg hover:bg-gray-600"
         >
           Voltar
         </button>
         <button
-          onClick={onNext}
+          onClick={handleNext}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           Próximo
