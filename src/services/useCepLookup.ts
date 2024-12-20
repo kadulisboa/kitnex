@@ -15,7 +15,6 @@ export function useCEPLookup() {
   const fetchAddressData = async (cep: string): Promise<CEPData | null> => {
     setLoading(true);
     setError(null);
-    console.log("fetching address data for", cep);
     const formatedCep = cep.replace(/\D/g, "");
 
     try {

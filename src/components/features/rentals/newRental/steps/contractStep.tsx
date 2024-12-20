@@ -3,6 +3,7 @@
 import { useRentalForm } from "@/contexts/rentalFormContext";
 import { formatCurrencyToDecimal } from "@/lib/formatCurrency";
 import { ContractStepProps } from "@/types/props";
+import { parseISO, startOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { NumericFormat } from "react-number-format";
@@ -43,8 +44,8 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
     }
 
     // Validate dates
-    const startDate = new Date(contract.startDate);
-    const endDate = new Date(contract.endDate);
+    const startDate = startOfDay(parseISO(contract.startDate));
+    const endDate = startOfDay(parseISO(contract.endDate));
 
     if (endDate && startDate >= endDate) {
       toast.error("A data de término deve ser posterior à data de início");
@@ -74,8 +75,8 @@ export function ContractStep({ onNext, onBack }: ContractStepProps) {
     // Save current data before going back
     const price = formatCurrencyToDecimal(contract.price);
     const dueDay = parseInt(contract.dueDay);
-    const startDate = new Date(contract.startDate);
-    const endDate = new Date(contract.endDate);
+    const startDate = startOfDay(parseISO(contract.startDate));
+    const endDate = startOfDay(parseISO(contract.endDate));
 
     setContractData({
       price,

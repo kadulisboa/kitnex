@@ -58,7 +58,7 @@ export function RentalsList({ rentals }: RentalsListProps) {
               </td>
               <td className="p-4">
                 <p className="font-medium text-gray-900">
-                  {formatCurrency(Number(rental.price))}
+                  {formatCurrency(rental.price)}
                 </p>
                 <p className="text-sm text-gray-500">Dia {rental.dueDay}</p>
               </td>
@@ -77,13 +77,13 @@ export function RentalsList({ rentals }: RentalsListProps) {
                 <div className="flex items-center gap-2">
                   <div
                     className={`w-2 h-2 rounded-full ${
-                      rental.overdueCharges > 0 ? "bg-red-400" : "bg-green-400"
+                      rental.charges.length > 0 ? "bg-red-400" : "bg-green-400"
                     }`}
                   />
                   <span className="text-sm text-gray-700">
-                    {rental.overdueCharges > 0
-                      ? `${rental.overdueCharges} ${
-                          rental.overdueCharges > 1 ? "atrasados" : "atrasado"
+                    {rental.charges.length > 0
+                      ? `${rental.charges.length} ${
+                          rental.charges.length > 1 ? "atrasados" : "atrasado"
                         }`
                       : "Em dia"}
                   </span>

@@ -1,25 +1,17 @@
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
 export const formatDate = (date: Date | string) => {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
+  const parsedDate = typeof date === "string" ? parseISO(date) : date;
+  return format(parsedDate, "dd/MM/yyyy", { locale: ptBR });
 };
 
-// Também podemos adicionar alguns helpers adicionais úteis
 export const formatDateWithTime = (date: Date | string) => {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(date));
+  const parsedDate = typeof date === "string" ? parseISO(date) : date;
+  return format(parsedDate, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
 };
 
 export const formatDateToMonth = (date: Date | string) => {
-  return new Intl.DateTimeFormat("pt-BR", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
+  const parsedDate = typeof date === "string" ? parseISO(date) : date;
+  return format(parsedDate, "MMMM/yyyy", { locale: ptBR });
 };

@@ -3,7 +3,11 @@
 import { useRentalForm } from "@/contexts/rentalFormContext";
 import { formatCurrency } from "@/lib/formatCurrency";
 import { formatDate } from "@/lib/formatDate";
+import { createRental } from "@/useCases/rentals/createRental";
+import { useAuth } from "@clerk/nextjs";
+import { addMonths, isAfter, isBefore, setDate, startOfDay } from "date-fns";
 import { CalendarDays, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -24,19 +28,20 @@ function generateChargesPreviews(
   dueDay: number
 ): ChargePreview[] {
   const charges: ChargePreview[] = [];
-  const currentDate = new Date(startDate);
+  let currentDate = startOfDay(setDate(new Date(startDate), dueDay));
 
-  currentDate.setDate(dueDay);
-  if (currentDate.getTime() < startDate.getTime()) {
-    currentDate.setMonth(currentDate.getMonth() + 1);
+  // Se a data de vencimento for anterior à data de início,
+  // avança para o próximo mês
+  if (isBefore(currentDate, startDate)) {
+    currentDate = addMonths(currentDate, 1);
   }
 
-  while (currentDate <= endDate) {
+  while (!isAfter(currentDate, endDate)) {
     charges.push({
       dueDate: new Date(currentDate),
       price,
     });
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate = addMonths(currentDate, 1);
   }
 
   return charges;
@@ -46,8 +51,10 @@ export function ConfirmationStep({
   onBack,
   onComplete,
 }: ConfirmationStepProps) {
+  const { userId } = useAuth();
   const { formData } = useRentalForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   if (!formData.renter || !formData.property || !formData.contract) {
     return (
@@ -61,20 +68,25 @@ export function ConfirmationStep({
 
   const chargesPreviews = formData.contract.endDate
     ? generateChargesPreviews(
-        new Date(formData.contract.startDate),
-        new Date(formData.contract.endDate),
+        startOfDay(new Date(formData.contract.startDate)),
+        startOfDay(new Date(formData.contract.endDate)),
         formData.contract.price,
         formData.contract.dueDay
       )
     : [];
 
   const handleComplete = async () => {
+    if (!userId) return;
+
     try {
       setIsSubmitting(true);
-      // TODO: Implement the creation of the rental
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await createRental({
+        userId,
+        data: formData,
+      });
       toast.success("Aluguel criado com sucesso!");
       onComplete();
+      router.refresh();
     } catch {
       toast.error("Erro ao criar aluguel. Tente novamente.");
     } finally {

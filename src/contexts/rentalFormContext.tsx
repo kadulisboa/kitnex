@@ -4,15 +4,10 @@
 import {
   ContractFormData,
   PropertyFormData,
+  RentalFormData,
   RenterFormData,
 } from "@/types/forms";
 import { createContext, useContext, useState } from "react";
-
-interface RentalFormData {
-  renter?: RenterFormData;
-  property?: PropertyFormData;
-  contract?: ContractFormData;
-}
 
 interface RentalFormContextType {
   formData: RentalFormData;

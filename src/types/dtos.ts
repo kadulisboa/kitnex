@@ -12,7 +12,7 @@ export interface CreatePropertyDTO {
   type: PropertyType;
   identifier: string;
   address: string;
-  number?: string;
+  number: string;
   complement?: string;
   district: string;
   city: string;
@@ -22,18 +22,21 @@ export interface CreatePropertyDTO {
 
 export interface CreateRenterDTO {
   name: string;
+  userId: string;
   email?: string;
-  phone?: string;
+  phone: string;
   document: string;
 }
 
 export interface CreateRentalDTO {
+  userId: string;
+  code: string;
   propertyId: string;
   renterId: string;
   price: number;
   dueDay: number;
   startDate: Date;
-  endDate?: Date;
+  endDate: Date;
 }
 
 export interface CreateChargeDTO {

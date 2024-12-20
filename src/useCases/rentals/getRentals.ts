@@ -1,5 +1,7 @@
+import { getUserIdFromClerk } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rentals } from "@/mocks/rentals";
+import { rentals as mockedRentals } from "@/mocks/rentals";
+import { RentalWithSummary } from "@/types/props";
 
 interface GetRentalsParams {
   userId: string;
@@ -11,10 +13,12 @@ export async function getRentals({
   userId,
   search,
   hasOverdueCharges,
-}: GetRentalsParams) {
-  return prisma.rental.findMany({
+}: GetRentalsParams): Promise<RentalWithSummary[]> {
+  const userIdNoClerk = await getUserIdFromClerk(userId);
+
+  const rentals = await prisma.rental.findMany({
     where: {
-      userId,
+      userId: userIdNoClerk,
       active: true,
       OR: search
         ? [
@@ -42,6 +46,7 @@ export async function getRentals({
     include: {
       renter: {
         select: {
+          id: true,
           name: true,
           document: true,
         },
@@ -50,6 +55,14 @@ export async function getRentals({
         select: {
           identifier: true,
           address: true,
+        },
+      },
+      charges: {
+        select: {
+          id: true,
+        },
+        where: {
+          status: "OVERDUE",
         },
       },
       _count: {
@@ -62,13 +75,18 @@ export async function getRentals({
       updatedAt: "desc",
     },
   });
+
+  return rentals.map((rental) => ({
+    ...rental,
+    price: parseFloat(rental.price.toString()),
+  }));
 }
 
 export async function getMockedRentals({
   search,
   hasOverdueCharges,
 }: GetRentalsParams) {
-  let filteredRentals = [...rentals];
+  let filteredRentals = [...mockedRentals];
 
   // Aplica filtro de busca
   if (search) {
@@ -85,7 +103,7 @@ export async function getMockedRentals({
   // Filtra por cobranças pendentes
   if (hasOverdueCharges) {
     filteredRentals = filteredRentals.filter(
-      (rental) => rental.overdueCharges > 0
+      (rental) => rental.charges.length > 0
     );
   }
 

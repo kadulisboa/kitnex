@@ -1,13 +1,13 @@
-// src/components/features/rentals/newRental/steps/propertyStep.tsx
 "use client";
 
 import { useRentalForm } from "@/contexts/rentalFormContext";
-import { properties } from "@/mocks/properties";
 import { useCEPLookup } from "@/services/useCepLookup";
 import { PropertyType } from "@/types/enums";
 import { PropertyFormData as SelectedProperty } from "@/types/forms";
 import { Property } from "@/types/models";
 import { PropertyStepProps } from "@/types/props";
+import { getProperties } from "@/useCases/properties/getProperties";
+import { useAuth } from "@clerk/nextjs";
 import { House, HousePlus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PatternFormat } from "react-number-format";
@@ -22,6 +22,7 @@ const propertyTypeLabels: Record<PropertyType, string> = {
 };
 
 export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
+  const { userId } = useAuth();
   const { formData, setPropertyData } = useRentalForm();
 
   // Inicializa estados com dados do contexto, se existirem
@@ -38,7 +39,7 @@ export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
             identifier: formData.property.identifier,
             address: formData.property.address,
             type: formData.property.type,
-            number: formData.property.number || null,
+            number: formData.property.number,
             district: formData.property.district,
             city: formData.property.city,
             state: formData.property.state,
@@ -88,19 +89,37 @@ export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
 
   // Busca imóveis quando o termo de busca muda
   useEffect(() => {
-    if (!searchTerm) {
-      setSearchResults([]);
-      return;
-    }
+    const searchProperties = async () => {
+      if (!searchTerm) {
+        setSearchResults([]);
+        return;
+      }
 
-    const searchLower = searchTerm.toLowerCase();
-    const filtered = properties.filter(
-      (property) =>
-        property.identifier.toLowerCase().includes(searchLower) ||
-        property.address.toLowerCase().includes(searchLower) ||
-        property.district.toLowerCase().includes(searchLower)
-    );
-    setSearchResults(filtered);
+      try {
+        // Busca apenas propriedades disponíveis
+        const properties = await getProperties({
+          userId: userId!,
+          search: searchTerm,
+          onlyAvailable: true,
+        });
+
+        console.log(properties);
+
+        setSearchResults(
+          properties.map((property) => ({
+            ...property,
+            type: property.type as PropertyType,
+          }))
+        );
+      } catch {
+        toast.error("Erro ao buscar imóveis");
+        setSearchResults([]);
+      }
+    };
+
+    // Debounce da busca
+    const timeoutId = setTimeout(searchProperties, 300);
+    return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
   const handleCEPChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,7 +152,7 @@ export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
         type: selectedProperty.type,
         identifier: selectedProperty.identifier,
         address: selectedProperty.address,
-        number: selectedProperty.number || null,
+        number: selectedProperty.number,
         district: selectedProperty.district,
         city: selectedProperty.city,
         state: selectedProperty.state,
@@ -180,7 +199,7 @@ export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
         type: selectedProperty.type,
         identifier: selectedProperty.identifier,
         address: selectedProperty.address,
-        number: selectedProperty.number || null,
+        number: selectedProperty.number,
         district: selectedProperty.district,
         city: selectedProperty.city,
         state: selectedProperty.state,
@@ -299,7 +318,9 @@ export function PropertyStep({ onNext, onBack }: PropertyStepProps) {
           <div className="border rounded-lg divide-y max-h-[300px] overflow-y-auto">
             {searchResults.length === 0 ? (
               <div className="p-4 text-center text-sm text-gray-500">
-                {searchTerm ? "Nenhum imóvel encontrado" : "Digite para buscar"}
+                {searchTerm
+                  ? "Nenhum imóvel encontrado ou disponível"
+                  : "Digite para buscar"}
               </div>
             ) : (
               searchResults

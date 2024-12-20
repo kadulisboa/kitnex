@@ -1,36 +1,35 @@
+"use server";
 import { prisma } from "@/lib/prisma";
+import { CreateRenterDTO } from "@/types/dtos";
 import { Renter } from "@prisma/client";
 
-interface CreateRenterData {
-  name: string;
-  document: string;
-  email?: string;
-  phone?: string;
-}
+export async function createRenter(data: CreateRenterDTO): Promise<Renter> {
+  try {
+    // Verifica se já existe um inquilino com o mesmo documento
+    const existingRenter = await prisma.renter.findUnique({
+      where: {
+        userId_document: {
+          userId: data.userId,
+          document: data.document,
+        },
+      },
+    });
 
-export async function createRenter(data: CreateRenterData): Promise<Renter> {
-  const normalizedDocument = data.document.replace(/\D/g, "");
-  const normalizedPhone = data.phone?.replace(/\D/g, "");
+    if (existingRenter) {
+      throw new Error("Já existe um inquilino com este documento");
+    }
 
-  // TODO: Implementar criação real no banco
-  // return prisma.renter.create({
-  //   data: {
-  //     ...data,
-  //     document: normalizedDocument,
-  //     phone: normalizedPhone,
-  //     active: true,
-  //   },
-  // });
+    // Cria o inquilino
+    const renter = await prisma.renter.create({
+      data: {
+        ...data,
+        active: true,
+      },
+    });
 
-  // Mock implementation
-  return {
-    id: Math.random().toString(36).substring(7),
-    name: data.name,
-    document: normalizedDocument,
-    email: data.email || null,
-    phone: normalizedPhone || null,
-    active: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as Renter;
+    return renter;
+  } catch (error) {
+    console.error("Erro ao criar inquilino:", error);
+    throw error;
+  }
 }

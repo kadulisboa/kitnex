@@ -53,7 +53,7 @@ export interface Property {
   type: PropertyType;
   identifier: string;
   address: string;
-  number: string | null;
+  number: string;
   complement: string | null;
   district: string;
   city: string;

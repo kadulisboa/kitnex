@@ -3,7 +3,8 @@
 import { searchRentersAction } from "@/app/actions/renters";
 import { useRentalForm } from "@/contexts/rentalFormContext";
 import { RenterFormData as SelectedRenter } from "@/types/forms";
-import { Renter as MockRenter } from "@/types/models";
+import { Renter as RenterType } from "@/types/models";
+import { useAuth } from "@clerk/nextjs";
 import { Search, UserPlus, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PatternFormat } from "react-number-format";
@@ -14,12 +15,13 @@ interface RenterStepProps {
 }
 
 export function RenterStep({ onNext }: RenterStepProps) {
+  const { userId } = useAuth();
   const { formData, setRenterData } = useRentalForm();
   const [selectedOption, setSelectedOption] = useState<"existing" | "new">(
     !formData.renter?.isNew ? "existing" : "new"
   );
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<MockRenter[]>([]);
+  const [searchResults, setSearchResults] = useState<RenterType[]>([]);
   const [selectedRenter, setSelectedRenter] = useState<SelectedRenter | null>(
     formData.renter?.id
       ? {
@@ -51,7 +53,7 @@ export function RenterStep({ onNext }: RenterStepProps) {
         return;
       }
 
-      const result = await searchRentersAction("mock-user-id", searchTerm);
+      const result = await searchRentersAction(userId!, searchTerm);
       if (result.data) {
         setSearchResults(result.data);
       }
@@ -93,7 +95,7 @@ export function RenterStep({ onNext }: RenterStepProps) {
     }
   };
 
-  const handleSelectRenter = (renter: MockRenter) => {
+  const handleSelectRenter = (renter: RenterType) => {
     const selected = {
       id: renter.id,
       name: renter.name,

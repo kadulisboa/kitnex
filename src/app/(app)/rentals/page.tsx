@@ -1,7 +1,7 @@
 import { RentalsHeader } from "@/components/features/rentals/rentalsHeader";
 import { RentalsList } from "@/components/features/rentals/rentalsList";
 import { PageTitle } from "@/components/ui/pageTitle";
-import { getMockedRentals } from "@/useCases/rentals/getRentals";
+import { getRentals } from "@/useCases/rentals/getRentals";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -22,7 +22,7 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
   // Aguarda os searchParams
   const { search, status } = await searchParams;
 
-  const rentalsMocked = await getMockedRentals({
+  const rentals = await getRentals({
     userId: user.id,
     search,
     hasOverdueCharges: status === "overdue",
@@ -38,7 +38,7 @@ export default async function RentalsPage({ searchParams }: RentalsPageProps) {
       <RentalsHeader />
 
       <div className="bg-white rounded-lg shadow">
-        <RentalsList rentals={rentalsMocked} />
+        <RentalsList rentals={rentals} />
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
 import { PropertyType } from "./enums";
-import type { Step } from "./newRental";
 
 export interface RenterFormData {
   id?: string;
@@ -15,7 +14,7 @@ export interface PropertyFormData {
   type: PropertyType;
   identifier: string;
   address: string;
-  number: string | null;
+  number: string;
   complement?: string;
   district: string;
   city: string;
@@ -35,5 +34,4 @@ export interface RentalFormData {
   renter?: RenterFormData;
   property?: PropertyFormData;
   contract?: ContractFormData;
-  currentStep: Step;
 }

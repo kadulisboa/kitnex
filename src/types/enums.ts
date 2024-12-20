@@ -16,6 +16,7 @@ export enum PropertyType {
 
 export enum ChargeStatus {
   PENDING = "PENDING",
+  CHARGED = "CHARGED",
   PAID = "PAID",
   OVERDUE = "OVERDUE",
   CANCELLED = "CANCELLED",
